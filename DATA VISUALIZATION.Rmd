@@ -1,0 +1,239 @@
+---
+title: "DAATA VISUALIZATION"
+author: "OLUWAFIKEMI"
+date: "5/25/2022"
+output: html_document
+---
+
+SCATTER PLOT
+Customization of scatter plots is very much acceptable in R 
+Examples are:
+Main: The title for the plot(Displaced at the top)
+Sub: The subtitle for the plot(Displaced at the bottom)
+Xlim: The X-axis scale; uses the format c(min,max);automatically determined by default
+ylim: The Y-axis; uses the format c(min,max):automatically determined by default
+xlab: The X-axis title
+ylab: the Y-axis title
+
+col: Determines the colours used for points and lines; accepts the charcter strings of colour names(red,green,e.t.c.)
+pch: The type of point to use (circle, square, triangle, e.t.c.); accepts values 0 to 25 for symbols and 32 to 255 for characters
+cex: The amount to scale the size of points; accepts a numeric value; default is 1
+lty: Defines the line type; accepts various characters strings(solids and dashed,dotted,e.t.c.)
+Lwd: Defines the line width; accepts a positive number; default is 1
+
+```{r}
+x<-rnorm(200)
+plot(x)
+```
+
+PLOTTING a scatter graph with a sequence of numbers between -5 and 5, incrementing by 0.1, choose the mean as 2 and standard devaition 0.8
+
+```{r}
+x<- seq(-5,5, by =0.1)
+y<- dnorm(x, mean=2, sd=0.8)
+y
+plot(x,y)
+```
+THE FOLLOWING CODE WILL CREATE A SCATTER PLOT FOR THE RELATIONSHIP BETWEEN WT(WEIGHT) AND MPG(MILLESPERGALLON) USING MTCARS DATASET
+```{r}
+data(mtcars)
+plot(x=mtcars$wt, y=mtcars$mpg,
+    main = "scatterplot", xlab ="car weight", ylab= "miles per gallon")
+mtcars
+```
+```{r}
+plot(x=mtcars$wt,
+     y=mtcars$mpg,
+    main = "scatterplot", 
+    xlab ="car weight",
+    ylab= "miles per gallon",
+    xlim =c(2.5,5),
+    ylim= c(10,30),
+    pch=25,
+    col ="blue")
+```
+```{r}
+iris
+```
+
+```{r}
+iris
+names(iris)
+iris$Species
+```
+```{r}
+iris
+plot(data =iris,
+     main = "Iris Data",
+     Sepal.Length ~ Petal.Length,
+     xlab = "petal length (cm)",
+     ylab = "Sepal length (cm)",
+     pch= c(16, 17, 18) [as.numeric(Species)],
+     col = c("magenta", "purple", "blue") [as.numeric(Species)])
+```
+```{r}
+x<- rnorm(100)
+y<- 3 * x + rnorm(100)
+z<- sqrt(1+y^2) + rnorm(100)
+plot(x,y,
+     main = "conditional scatter plot",
+     pch = ifelse(x* y > 1,10,2),
+     xlim= range(x),
+     ylim= range(y,z),
+     xlab = "x",
+     ylab = 'Value',
+     col = ifelse(y>= mean(y),'blue','magenta'))
+     
+     
+```
+
+simple bar chart
+```{r}
+mtcars
+Counts <- table(mtcars$gear)
+Counts
+```
+```{r}
+barplot(Counts, main = "car distribution by gear",
+        xlab="Number of Gears")
+```
+
+```{r}
+barplot(Counts, main = "car distribution by gear",
+        ylab="Number of Gears", horiz = TRUE)
+```
+```{r}
+mtcars
+Counts <- table(mtcars$vs,mtcars$gear)
+Counts
+```
+```{r}
+barplot(Counts, main = "car distribution by gear and vs",
+       beside = TRUE,
+         ylab="Number of Gears", 
+         xlab = "frequency",
+        col= c("lightblue", "maroon"),
+        legend = rownames(Counts))
+```
+```{r}
+colors <- c("green", "Orange", "brown")
+months <- c("mar", "apr", "may","jul","sept")
+Regions <- c("East","West","North")
+
+Values <- matrix(c(2,9,3,11,9,4,8,7,3,12,5,2,8,10,11), nrow=3,
+                 ncol = 5, byrow = TRUE)
+barplot(Values, main= "total revenue", xlab= "months",ylab="revenue", col=colors,names.arg = months,beside=TRUE,las=2,border = "purple", font.axis= 4,col.axis = "magenta", cex.axis = 0.9,col.lab="blue", font.lab=3)
+        legend("topleft",Regions, cex =0.9,fill =colors, )
+
+        Values
+```
+SIMPLE PIE CHART
+```{r}
+Percentage <- c (10,15,38,28,10)
+labels <- c("0-8 yrs 10%","9-11yrs 15%","12yrs 38%", "13-15yrs 28%","16 and above yrs 10%")
+pie(Percentage,labels = labels, main = "Education percentage", col=c("Blue","magenta", "turquoise","red","purple"))
+```
+
+```{r}
+X<-c(21,62,10,53)
+
+labels <- c("LONDON","NEW YORK","SIGNAPORE","MUMBAI")
+PIPEPERCENT <- round(100*X/sum(X),1)
+PIPEPERCENT
+
+pie(X, labels = PIPEPERCENT, main= "City pie chart",col= rainbow(length(X)))
+
+legend("bottomright", c("LONDON","NEW YORK","SINGAPORE", "MUMBAI"),
+       cex=0.7, fill =rainbow(length(X)))
+
+```
+```{r}
+library(plotrix)
+```
+```{r}
+library(ggplot2)
+```
+
+```{r}
+X<-c(21,62,10,53)
+
+labels <- c("LONDON","NEW YORK","SIGNAPORE","MUMBAI")
+PIPEPERCENT <- round(100*X/sum(X),1)
+PIPEPERCENT
+
+pie3D(X, labels = PIPEPERCENT, main= "City pie chart",col= rainbow(length(X)))
+
+legend("topright", c("LONDON","NEW YORK","SINGAPORE", "MUMBAI"),
+       cex=0.7, fill =rainbow(length(X)))
+```
+
+LINE CHART
+```{r}
+V<- c(9,12,17,23,21,30,35,31,36)
+X<- c(1,2,3,4,5,6,7,8,9)
+plot(X,V, type= "o", col="red",xlab ="month", ylab= "Growth",main ="Growth Rate")
+```
+
+HISTOGRAM
+```{r}
+random = rnorm(100)
+hist(random)
+```
+
+```{r}
+AirPassengers
+hist(AirPassengers, main = "histogram for air passengers",
+     xlab = "passengers",
+     border = "blue",
+     col= "yellow",
+     xlim= c(100,700),
+     breaks=11)
+```
+```{r}
+mpg
+```
+
+
+```{r}
+h<-ggplot(data = mpg, aes(x = cty, y = hwy))
+```
+
+
+```{r}
+h + geom_area(stat = "bin")
+x, y, alpha, color, fill, linetype, size
+```
+
+```{r}
+c + geom_area(stat = "bin")
+x, y, alpha, color, fill, linetype, size
+```
+
+```{r}
+economics
+names(economics)
+```
+```{r}
+h<-ggplot(data = economics, aes(x = date, y = unemploy))
+h + geom_polygon(aes(date = unemploy))
+```
+```{r}
+a<-ggplot(data = economics, aes(x = date, y = unemploy))
+a + geom_path(lineend="butt", linejoin="round", linemitre=1)
+a + geom_ribbon(aes(ymin=unemploy - 900, ymax=unemploy + 900))
+```
+```{r}
+seals
+b <- ggplot(seals, aes(x = long, y = lat))
+b + geom_curve(aes(yend = lat + 1, xend=long+1),curvature=1)
+```
+```{r}
+b + geom_rect(aes(xmin = long, ymin=lat, xmax= long + 1, ymax = lat + 1))
+
+```
+
+```{r}
+c <- ggplot(mpg, aes(hwy)); c2 <- ggplot(mpg)
+
+```
+

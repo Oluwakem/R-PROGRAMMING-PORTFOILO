@@ -1,0 +1,174 @@
+---
+title: "RANDOM FOREST"
+author: "OLUWAFIKEMI"
+date: '2022-06-29'
+output: html_document
+---
+
+Random forest 
+```{r}
+library(randomForest)
+library(skimr)
+```
+
+```{r}
+install.packages("randomForest")
+install.packages("skimr")
+```
+
+```{r}
+rfNews()
+```
+
+```{r pressure, echo=FALSE, fig.cap="B caption", out.width='100%'}
+knitr::include_graphics("original Data.png")
+```
+```{r}
+getwd()
+```
+
+```{r}
+require(caTools)
+```
+
+
+```{r}
+Home <- read_csv("C:/Users/acer/Desktop/Clean Heart disease dataset.csv")
+head(Home)
+#Home = read.csv("Clean Heart disease dataset.csv", header= TRUE )
+
+Home
+```
+
+```{r}
+library(readr)
+Clean_Heart_disease_dataset <- read_csv("C:/Users/acer/Desktop/Clean_Heart _disease _dataset.csv")
+head(Clean_Heart_disease_dataset)
+Home = Clean_Heart_disease_dataset
+```
+```{r}
+colSums(is.na(Home))
+```
+
+
+```{r}
+names(Home)
+```
+
+```{r}
+unique(Home$num)
+unique(Home$ca)
+unique(Home$thai)
+```
+
+```{r}
+Home$num [data$num > 1 ]= 1
+```
+
+
+```{r}
+library(skimr) #helps to describe data statistically 
+skim(Home) %>%
+  tibble::as.tibble() #put in table format
+```
+
+
+
+```{r}
+sapply(Home, class)
+```
+
+```{r}
+Home = transform(
+  Home,
+  age= as.integer(age),
+  sex= as.factor(sex),
+  cp=as.factor(cp),
+  trestbps= as.integer(trestbps),
+  choi= as.integer(choi),
+  fbs = as.factor(fbs),
+  restecg = as.factor(restecg),
+  thalach = as.integer(thalach),
+  exang = as.factor(exang),
+  oldpeak = as.numeric(oldpeak),
+  slope = as.factor(slope),
+  ca = as.factor(ca),
+  thai = as.factor(thai),
+  num= as.factor(num)
+  
+  
+)
+```
+
+```{r}
+sapply(Home, class)
+```
+
+```{r}
+summary(Home)
+```
+
+```{r}
+Home[Home == "?"] = NA
+```
+
+```{r}
+colSums(is.na(Home))
+```
+
+
+
+```{r}
+is.null(Home)
+```
+
+
+```{r}
+sample = sample.split(Home$num, SplitRatio = .80)# 80%
+sample
+```
+
+```{r}
+train = subset(Home, sample== TRUE)
+nrow(train)
+ncol(train)
+```
+
+```{r}
+test = subset(Home, sample == FALSE)
+nrow(test)
+ncol(test)
+```
+
+```{r}
+dim(train)
+dim(test)
+```
+
+
+
+```{r}
+rf = randomForest(num ~ ., data=train)
+```
+
+
+```{r}
+rf
+```
+
+```{r}
+pred = predict(rf,newdata = test[-14])
+pred
+
+```
+
+```{r}
+confusion_matrix = table(test[,14],pred)
+confusion_matrix
+```
+
+```{r}
+rattle()
+```
+
+

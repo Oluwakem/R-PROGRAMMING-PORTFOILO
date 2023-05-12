@@ -1,0 +1,140 @@
+---
+title: "MANIPULATING DATA USING GGPLOT2"
+author: "OLUWAFIKEMI"
+date: "6/18/2022"
+output: html_document
+---
+---
+title: "MANIPULATING GGPLOT USING HR DATASET"
+author: "OLUWAFIKEMI"
+date: "6/10/2022"
+output: html_document
+---
+
+```{r}
+library(readr)
+HR_Dataset <- read_csv("HR Dataset.csv")
+head(HR_Dataset)
+```
+
+```{r}
+library(highcharter)
+library(ggplot2)
+library(readr)
+library(flexdashboard)
+library(dplyr)
+library(plotly)
+```
+```{r}
+library(plotly)
+```
+
+
+```{r}
+DATA = HR_Dataset
+DATA
+```
+```{r}
+unique(DATA$STATUS)
+```
+
+# DATA WRANGLING - CHECK IF THERE ARE MISSING VALUES OR INFO
+```{r}
+sum(is.null(DATA))
+```
+#count no if rows we have
+```{r}
+nrow(DATA)
+```
+```{r}
+summary(DATA)
+```
+```{r}
+ncol(DATA)
+```
+#Earlier we had indicated that we had both active records at end of year and terminates during the year for each of 10years going from 2006 to 2015. To have a population to model from(to differentiate ACTIVES FROM TERMINATES) We have to include both status types
+Its useful then to get a baseline of what percent/ porportion the terminates are  of the entire population.It also answers our first question.Let's look at the next.
+
+```{r}
+StatusCount = as.data.frame.matrix(DATA %>%
+  group_by(STATUS_YEAR)%>%
+  select(STATUS)%>% table())
+
+#StatusCount
+StatusCount$TOTAL <- StatusCount$ACTIVE + StatusCount$TERMINATED
+StatusCount$PercentTerminated <- StatusCount$TERMINATED/(StatusCount$TOTAL)*100
+StatusCount$PercentACTIVE <- StatusCount$ACTIVE/(StatusCount$TOTAL) *100
+StatusCount
+mean(StatusCount$PercentTerminated)
+mean(StatusCount$PercentACTIVE)
+```
+```{r}
+StatusCount = as.data.frame.matrix(DATA) %>%
+  group_by(STATUS_YEAR)%>%
+  select(STATUS)%>% table()
+```
+```{r}
+#library(ggplot2
+ggplot()+ geom_bar (aes( y=  ..count.. , x =
+as.factor(BUSINESS_UNIT),fill=(STATUS)),
+data = DATA,position = position_stack())
+
+```
+```{r}
+ggplot(DATA,aes(y=..count..,x= as.factor(BUSINESS_UNIT),fill=(STATUS)))+geom_bar()
+```
+```{r}
+h<-ggplot()+ geom_bar (aes( y=  ..count.. , x =
+as.factor(BUSINESS_UNIT),fill=(STATUS)),
+data = DATA,position = position_dodge2())
+ggplotly(h,tooltip = "y")
+```
+```{r}
+Job_Termination
+```
+# Job Termination findings according to termination type and status year
+```{r}
+Job_Termination = as.data.frame(DATA %>% filter(STATUS=="TERMINATED")) #== MEANS FILTER
+#Job_Termination
+h= ggplot()+ geom_bar(aes(y=..count..,x= as.factor(STATUS_YEAR),fill=as.factor(termtype_desc)),data = Job_Termination,position = position_stack())
+
+ggplotly(h,tooltip = "y")
+h
+```
+#just terminate by status year and termination reas
+```{r}
+h= ggplot()+ geom_bar(aes(y=..count..,x= as.factor(STATUS_YEAR),fill=as.factor(termreason_desc)),data = Job_Termination,position = position_stack())
+h
+```
+#looking at job termination report by termination reason and department
+```{r}
+h= ggplot()+ geom_bar(aes(y=..count..,x= as.factor(department_name),fill=as.factor(termreason_desc)),data = Job_Termination,position = position_stack())+ theme(axis.text = element_text(angle = 90,hjust=1,vjust = 0.3))
+ggplotly(h,tooltip = "y")
+```
+#generallly most termination seem to be voluntary year by year except in the most recent year where are some involuntary termination
+```{r}
+?hrbrthemes
+```
+
+```{r}
+Data_Analysts= c(rep("Yemi",3), rep("Kemi",3),rep("Hassan",3),rep("Tony",3),rep("Abdul",3),rep("Bisola",3)) #rep stands for repeat times
+Data_Analysts
+```
+```{r}
+skills = rep(c("excel","R","power Bi"),6) #rep stands for repeat items
+skills
+```
+```{r}
+scores = abs(rnorm(18,0,20))
+scores
+```
+```{r}
+data <- data.frame(Data_Analysts,skills,scores) #grouped to table format
+data
+```
+```{r}
+p=ggplot(data,aes(fill=skills,y=scores,x=Data_Analysts))+ geom_bar(position="Stack", stat = "identity")
+## we have stack and dodge position
+ggplotly(p, tooltip="y")
+```
+

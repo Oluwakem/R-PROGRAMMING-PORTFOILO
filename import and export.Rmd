@@ -1,0 +1,59 @@
+---
+title: "IMPORT AND EXPORT"
+author: "OLUWAFIKEMI"
+date: "5/25/2022"
+output: html_document
+---
+
+```{r}
+getwd() ## To know the file directory you are working with. Just like as in file                path
+
+```
+
+```{r}
+setwd("C:/Users/acer/Documents/R")
+```
+
+
+
+```{r}
+  ##### IMPORTING FILE
+library(readr)
+Product <- read_csv("R/Product.csv")
+head(Product)
+```
+
+```{r}
+#RETRIEVING DATA FROM THE IMPORTED FILE
+Product$Products
+Product$VAT
+summary(Product)
+#DETECTING DATA TYPE
+class(Product)
+```
+
+
+```{r}
+Name <- c('Hassan', 'Kemi','Yemi','Abolaji','Abdul','Adura')
+Gender<- c('Male','Female','Male','Male','Male','Female')
+Age<-c(32,39,42,36,29,28)
+Major <- c('Finance','Statistics','Computer science','Mathematics','Education','Quality control')
+Id<-c('1','2','3','4','5','6')
+records<- data.frame(Id,Name,Gender,Age,Major)
+records
+```
+
+```{r}
+class(records$Age)
+typeof(records$Age)
+str(records)
+```
+
+```{r}
+#saving the dataframe as csv
+write.csv(records,"records.csv")
+write.csv(records,"records.xlsx")
+write.csv(records,"records.doc")
+write.csv(records,"records.txt")
+```
+

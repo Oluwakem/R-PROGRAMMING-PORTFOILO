@@ -1,0 +1,158 @@
+---
+title: "LOOPS ANALYSIS"
+author: "OLUWAFIKEMI"
+date: "5/18/2022"
+output: html_document
+---
+*LAPY(): Loop over a list of vector and evaluate a function on each element
+*SAPLY(): same as laply but try to simplify the result
+*APPLY(): Apply a function over the margins of an array,matrics or data frames
+*TAPLY(): Apply a function over subsets of a vector
+*MAPLY(): Multivariate version of lapply
+\
+
+            lapply()
+The lapply() function does the following simple series of operations:
+1. It loops over a list, iterating (REPEAT OVER AND OVER THE SAME PROCESS) over each element in that list
+2. It applies a function to each element of the list(a function that you specify)
+3. and returns a list (the 1 is for "list").
+
+This function takes the argument:
+(1) a list X;
+(2) A function (or the name of a function)  FUN;
+(3) Other arguments via its...arguments
+If X is not a list, it will be coerced to a list using as.list()
+
+```{r}
+mat= cbind (x=c(3,0,3,3), y=c(3,0,0,0), z=c(3,0,0,3),r= c(1,1,0,0),d=c(1,1,1,0), v=c(1,1,1,0))
+mat
+matr=rbind(c(3,0,3,3), c(3,0,0,0), c(3,0,0,3), c(1,1,0,0),c(1,1,1,0), c(1,1,1,0))
+matr
+class(mat)
+```
+
+```{r}
+make <- apply(mat,1,sum)
+makes <- apply(mat,2,sum)
+make
+makes
+```
+```{r}
+mak <- apply(mat,1,min)
+ma <- apply(mat,2,min)
+mak
+ma
+```
+```{r}
+made <- apply(mat,1,max)
+may <- apply(mat,2,max)
+made
+may
+```
+```{r}
+a=1:5
+a
+b=rnorm(10)
+```
+```{r}
+rnorm(10,5)
+```
+```{r}
+x<-list(a=1:5,b=rnorm(10))
+x
+```
+
+```{r}
+lapply(x,mean)
+```
+```{r}
+input=c(1,2,3)
+lapply(input,function(x) x^2)
+```
+```{r}
+input=c(1,2,3)
+lapply(input,function(x) x+2)
+```
+```{r}
+x<-list(a=1:4, b=rnorm(10),c=rnorm(20,1), d=rnorm(100,5))
+x
+lapply(x,sum)
+lapply(x, mean)
+lapply(x,median)
+```
+```{r}
+#x<-list(a=1:4, b=rnorm(10),c=rnorm(20,1), d=rnorm(100,5))
+#x
+lapply(x,function(y) y^2)
+lapply(x,function(y) y/5)
+lapply(x,function(y) y*10)
+```
+you can use lapply() to evaluate a function multiple times each with a different argument.Below is an example where i call the runif() function (to generate uniformly distributed random variable) four times, each time generating a different  number of random numbers.
+```{r}
+runif(1)
+runif(2)
+runif(5)
+runif(20,0.3,0.6)
+```
+
+```{r}
+x<-1:4
+x
+lapply(x,runif)  #run random number sequentially
+```
+```{r}
+x=1:4
+lapply(x,runif,min=0, max= 10) #passing multiple  func min and max
+#default random number runif is 0 and 1 but now it is between 0 to  10
+```
+```{r}
+x<- list(a=matrix(1:4, 2,2), b=matrix(1:6,3,2))
+x
+```
+```{r}
+lapply(x, function(elt) { elt[,2]})
+lapply(x, function(elt) { elt[2,]})
+lapply(x, function(elt) { elt[1,2]})
+#elt fn helps to pick a particular row or column from a lappy
+```
+#maply it can apply a func on an unlimited set of vectors/list, it is like a version of lapply that can handle multiple vectors as argument
+```{r}
+XS =0:5
+YS= c(2,2,2,3,3,3)
+results<-mapply(function(x,y) sum(x,y),XS,YS)
+results
+```
+```{r}
+x<- list(a=1:4,b =rnorm(10),c=rnorm(20,1),d=rnorm(100,5))
+results <-mapply(sum,x)
+results
+```
+```{r}
+
+#Create Vector quantity
+quantity <- 31
+#Create multiple condition statement
+if (quantity <= 20){
+  print("Not Enough for Today")
+} else if (quantity > 20 & quantity <= 30){
+  print("Average Day")
+} else{
+  print ("What a Great Day!")
+}
+```
+```{r}
+
+category <- 'A'
+Price <- 10
+if (category == 'A') {
+  cat('A Vat rate of 8% is applied.', 'The total price is', Price * 1.08)
+} else if (category == 'B') { cat('A Vat rate of 10% is applied.', 'The total price is', Price * 1.10)
+} else if (category == 'C') { cat('A Vat rate of 15% is applied.', 'The total price is', Price * 1.15) } else { cat('A Vat rate of 20% is applied.', 'The total price is', Price * 1.20) 
+}
+
+```
+
+
+
+
+

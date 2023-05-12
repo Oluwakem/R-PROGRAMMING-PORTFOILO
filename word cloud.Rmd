@@ -1,0 +1,155 @@
+---
+title: "word cloud"
+author: "OLUWAFIKEMI"
+date: '2022-07-01'
+output: html_document
+---
+
+```{r}
+library(tidytext)
+library(textclean)
+library(wordcloud)
+library(dplyr)
+library(tidyverse)
+library(readxl)
+```
+
+```{r}
+library(readr)
+WhatsApp_Chat<- read_csv("WhatsApp Chat Class.csv")
+head(WhatsApp_Chat)
+```
+```{r}
+names(WhatsApp_Chat)
+NROW(WhatsApp_Chat)
+```
+```{r}
+rev = WhatsApp_Chat$`WHATSAPP GROUP`
+head(rev)
+```
+```{r}
+x<-rev %>%
+  str_to_lower() %>%
+  replace_contraction()%>%
+  replace_word_elongation() %>%
+  strip() 
+ # %>% head(10)
+x
+```
+
+```{r}
+rev %>%
+  str_to_lower() %>%
+  replace_contraction()%>%
+  replace_word_elongation() %>%
+  strip()
+  head(rev)
+```
+```{r}
+enframe(x, value = "word", name = NULL) #CONVERTING VECTORS TO DATA FRAME AND VICE VERSA
+```
+
+```{r}
+enframe(x, value = "word", name = NULL) %>%
+  unnest_tokens(word, word) %>%
+  count(word, sort = T) %>%
+  anti_join(stop_words)
+```
+
+```{r}
+words = enframe(x, value = "word", name = NULL) %>%
+unnest_tokens(word, word) %>%
+  #dplyr:: count(word, sort = TRUE) %>%
+  count(word,sort = T) %>%
+  anti_join(stop_words, by = c("word" = "word"))
+words
+```
+
+```{r}
+n<- words %>%
+  select(word, n)%>%
+  filter(word != "ma",
+         word != "ta",
+         word != "dr")
+n
+```
+
+```{r}
+n %>% 
+  with(
+    wordcloud(
+      words = word,
+      freq = n,
+      max.words = 500,
+      random.order = FALSE,
+      colors = brewer.pal(name= "Dark2",8)
+    )
+  )
+```
+
+
+
+```{r}
+library(readr)
+whatsapp_igs <- read_csv("whatsapp_igs.csv")
+head(whatsapp_igs)
+```
+```{r}
+names(whatsapp_igs)
+NROW(whatsapp_igs)
+```
+```{r}
+def = whatsapp_igs$`THE COMFORT ZONE`
+head(def)
+```
+```{r}
+y<-def %>%
+  str_to_lower() %>%
+  replace_contraction()%>%
+  replace_word_elongation() %>%
+  strip()#%>%
+ # head(10)
+y
+```
+
+```{r}
+enframe(y, value = "word", name = NULL) %>%
+  unnest_tokens(word, word) %>%
+  count(word, sort = T) %>%
+  anti_join(stop_words)
+```
+
+
+```{r}
+words = enframe(y, value = "word", name = NULL) %>%
+unnest_tokens(word, word) %>%
+  #dplyr:: count(word, sort = TRUE) %>%
+  count(word,sort = T) %>%
+  anti_join(stop_words, by = c("word" = "word"))
+words
+```
+
+```{r}
+n<- words %>%
+  select(word, n)%>%
+  filter(word != 20,
+         word != 19,
+         word != 12,
+         word != 2019)
+n
+```
+
+```{r}
+n %>% 
+  with(
+    wordcloud(
+      words = word,
+      freq = n,
+      max.words = 125,
+      random.order = FALSE,
+      colors = brewer.pal(name= "Dark2",8)
+    )
+  )
+```
+```
+

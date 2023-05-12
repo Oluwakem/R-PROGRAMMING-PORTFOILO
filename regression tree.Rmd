@@ -1,0 +1,136 @@
+---
+title: "REGRESSION TREE"
+author: "OLUWAFIKEMI"
+date: "6/22/2022"
+output: pdf_document
+---
+```{r}
+library(plyr)
+library(dplyr)
+library(ggplot2)
+library(plotly)
+library(rattle)
+library(caret)
+```
+
+
+```{r}
+install.packages("rattle")
+install.packages("caret")
+```
+```{r}
+getwd()
+```
+```{r}
+library(readr)
+TRUCKLOAD_ANALYSIS <- read_csv("C:\\Users\\acer\\Documents\\R\\TRUCKLOAD ANALYSIS.csv")
+head(TRUCKLOAD_ANALYSIS)
+```
+```{r}
+kemidata= TRUCKLOAD_ANALYSIS
+kemidata
+```
+you can also import data by typing this down here but mak sure the data you want to import is in the working direction you are working with
+```{r}
+data= read.csv("TRUCKLOAD_ANALYSIS")
+data
+```
+
+```{r}
+class(kemidata)
+```
+```{r}
+str(kemidata)
+```
+```{r}
+names(kemidata)
+```
+
+```{r}
+unique(kemidata$Month)
+unique(kemidata$Year)
+unique(kemidata$`Truckout date`)
+```
+```{r}
+truck_data_picked <- kemidata %>% select(c("Truckout distribution", "Quantity loaded","Destination state","Month", "Year" ))
+truck_data_picked
+```
+```{r}
+class(truck_data_picked)
+```
+```{r}
+str(truck_data_picked)
+```
+```{r}
+summary(truck_data_picked)
+```
+```{r}
+training_data_jan_march <- mytrain<- subset(truck_data_picked, Month <= "March")
+TESTDATA_APRIL = subset(truck_data_picked, Month == "April")
+TESTDATA_APRIL
+#you can also use the syntax select,filter or subset to filter
+```
+YOU CAN EXPORT THE DATA TO EXCEL TO CHECK THE FILTERING
+
+```{r}
+
+#NOW EXPORT THEM TO CSV
+write.csv(mytrain,'TRUCKTRAIN DATA.CSV')
+write.csv(TESTDATA_APRIL,'TRUCKTEST DATA.CSV')
+```
+
+```{r}
+mytrain
+training_data_jan_march
+```
+```{r}
+library(rpart)
+library(rpart.plot)
+```
+
+```{r}
+TRUCKED_FINISHED = rpart(training_data_jan_march$`Truckout distribution` ~ training_data_jan_march$`Quantity loaded`+ training_data_jan_march$Month, data= (training_data_jan_march))
+TRUCKED_FINISHED
+```
+```{r}
+rpart.plot(TRUCKED_FINISHED)
+```
+```{r}
+PREDICTING <- predict(TRUCKED_FINISHED,TESTDATA_APRIL)
+PREDICTING
+summary(PREDICTING)
+```
+
+
+```
+```{r}
+install.packages("rattle")
+```
+
+
+```{r}
+install.packages("rattle", repos = "rattle.togaware.com",type = "source")
+```
+
+```{r}
+install.packages("https://cran.r-project.org/bin/window/contrib/3.3/RGtk2_2.20.31.zip",repose = NULL)
+```
+
+
+
+```{r}
+Sys.which("make")
+```
+
+```{r}
+#remove.packages("rattle") to remove packages
+```
+
+```{r}
+install.packages("https://access.togaware.com/RGtk2_2.20.36.2.zip", repos=NULL)
+```
+
+```{r}
+rattle()
+```
+

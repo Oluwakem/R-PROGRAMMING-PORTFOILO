@@ -1,0 +1,165 @@
+---
+title: "MULTIPLE LINEAR REGRESSION"
+author: "OLUWAFIKEMI"
+date: "6/20/2022"
+output: html_document
+---
+#Supervised learning model with linear regression
+#_our_baby_steps_
+collecting the data in R
+Checking for linearity
+Applying the multiple linear regression model
+making a prediction
+----linear regression is used to make prediction
+
+STEP 1: COLLECT THE DATA
+
+So let"s start with a simple example where the goal is to predict the stock index price(the depedent variable)of a fictious economy based on two independent / input variables:
+
+interest rate- independent variable
+unemployment rate - independent variable
+depended variable - stock price is what we wish to predict
+
+#lets create a small data to use
+```{r}
+year<-c(2017,2017,2017,2017,2017,2017,2017,2017,2017,2017,2017,2017,2016,2016,2016,2016,2016,2016,2016,2016,2016,2016,2016,2016)
+length(year)
+```
+
+
+```{r}
+month<-c(12,11,10,9,8,7,6,5,4,3,2,1,12,11,10,9,8,7,6,5,4,3,2,1)
+month
+length(month)
+```
+```{r}
+interest_rate<-c(2.75,2.5,2.5,2.5,2.5,2.5,2.5,2.25,2.25,2.25,2,2,2,1.75,1.75,1.75,1.75,1.75,1.75,1.75,1.75,1.75,1.75,1.75)
+length(interest_rate)
+```
+
+```{r}
+unemployment_rate<-c(5.3,5.3,5.3,5.3,5.4,5.6,5.5,5.5,5.5,5.6,5.7,5.9,6,5.9,5.8,6.1,6.2,6.1,6.1,6.1,5.9,6.2,6.2,6.1)
+length(unemployment_rate)
+```
+```{r}
+stock_index_price <-c(1464,1394,1357,1293,1256,1254,1234,1195,1159,1167,1130,1075,1047,965,943,958,971,949,884,866,876,822,704,719)
+length(stock_index_price)
+```
+
+```{r}
+interest_rate
+is.data.frame(interest_rate)
+nrow(interest_rate)
+```
+
+```{r}
+getwd()
+```
+THIS IS HOW YOU PUT IT IN A DATA FRAME
+```{r}
+df = do.call(rbind,Map(data.frame, years = year, months = month, unemployement_rates=unemployment_rate, stock_index_prices=stock_index_price,interest_rates=interest_rate))
+df
+```
+```{r}
+class(df$years)
+class(df$months)
+class(df)
+typeof(df)
+str(df)
+```
+```{r}
+dim(df) #how many rows and columns, IN R, rows is observation and columns is variables
+```
+```{r}
+df[c('unemployement_rates','years')]
+```
+```{r}
+nrow(df['stock_index_prices'])
+```
+```{r}
+df["years"]
+```
+STEP 3: OKAY NA, LETS CHECK FOR LINARITY
+Before you apply linear regression models, you will need to verify that several assumptions are met.Most notably, you'll need to make sure that a linear relationship exists between the dependent variable and the independent variable/s
+
+A quick way to check for linearity is by using scatter plots.
+For our example, we will check that a linear relationship exists between:
+
+#The stock_index_price(dependent variable) and the interest_rate( independent variable); and 
+
+the  stock_index_price (dependent variable) and unemployment_rate(independent variable)
+
+```{r}
+max(df['stock_index_prices']) #check the max price
+min(df['stock_index_prices'])
+```
+lets use plot interest vs stock price
+```{r}
+plot(x=interest_rate, y= stock_index_price)
+#there is +ve linearity
+```
+
+```{r}
+plot(x=unemployment_rate, y= stock_index_price)
+#there is +ve linearity
+```
+#export the data frame from R to excel
+```{r}
+write.csv(df,"liner reg.csv")
+```
+
+```{r}
+cor(stock_index_price,interest_rate)
+```
+```{r}
+cor(stock_index_price,unemployment_rate)
+#notes, omg! it seems like we are fuck,meaning there's no no
+#fucking relationship between stock price and unemploymment
+#practically, as stock price goes up, unemployment_rate goes down
+```
+Notes you will notice that indeed a linear relationship exists between the stock_interest_rate, specifically, when interest rate go up, the stock index price also goes up:
+
+
+As you can see a linear relationship also exists between the stock_index_price and the unemployment rate - when the unemployment rate go up, the stock index price goes down (here we still have a linear relationship, but with a negative slope)
+
+STEP 4 Apply the multiple linear regression in R
+```{r}
+# model = lm(dependent variable ~ first inependent variable + second independent variable+...)
+#summary(model)
+
+```
+This is where we need to start training our linear regression model- learning the data
+```{r}
+model=lm(stock_index_price ~ interest_rate + unemployment_rate)
+summary(model)
+model
+```
+
+You can use the coefficient in the summary in order to build the multiple linear regression equation as follows:
+
+stock_index_price = (intercept) + (interest_rate coef)*X1
+(unemployment_rate coef)*X2
+X1 means the unknown interesr rate
+X2 means the unknown unmployment rate
+
+And once you plug the numbers from the summary
+stock_index_price = (1798.4) + (345.5)* X1 + (-250.1)*x2
+
+STEP 5: MAKE A PREDICTION
+Now lets make a prediction based on the equation above.
+For example, imagine that you want to predict the stock index price after you collected the following data
+
+interest rate = 1.5(i.e., X1 = 1.5)
+Uenmployment rate = 5.8(i.e., X2 = 5.8)
+
+And if you plug that data into the regression equation you will get:
+stock_index_price = (1798.4) + (345.5)* (1.5) + (-250.1)* (5.8) = 866.07
+
+y= c+ m1X1 +m2X2
+Y= m1X1 +m2X2 + m3X3 + .....+C
+
+```{r}
+stock_index_price =(1798.4) + (345.5)*(1.5) + (-250.1)*(5.8)
+stock_index_price
+```
+The predicted value for the stoc_index_price is therefore 866.07

@@ -1,0 +1,448 @@
+---
+title: "BRFFS 1"
+author: "Oluwakemi"
+date: "2024-08-13"
+output: html_document
+---
+
+
+### Instructions
+
+For the final section, you will choose four variables to explore in ways we have not in Q1-Q9. You will choose one of those four variables as the response variable and the other three as predictors. Be sure to read through all of the instructions for Q10-Q14 before choosing your 4 variables. 
+
+We expect that you will choose 4 *different* variables than those covered in Part 1, Q1-9.
+
+Feel free to create multiple variables for Q12, Q13, and Q14, e.g. Q12a, Q12b, etc. Please make it clear, though, the distinction between each question/problem with comments, spacing, and new code chunks. If you use Q12a, b, etc., be sure to print the results by doing Q12a or print(Q12a). Your answers must be clearly identifiable. 
+
+Take time to tidy your code once you are finished. The easier it is for us to understand, the more partial credit you could receive.
+
+
+
+
+### Data Set
+
+-   These data come from [Kaggle](https://www.kaggle.com/cdc/behavioral-risk-factor-surveillance-system).
+
+
+
+## Questions and Coded Solutions
+
+------------------------------------------------------------------------
+
+### Preliminaries
+
+```{r}
+rm(list = ls())
+
+### Load the libraries needed
+
+library(tidyverse)
+```
+
+
+```{r}
+### Load the Data
+
+brf <- read_csv("BRFSS2015_650.csv")
+
+```
+
+------------------------------------------------------------------------
+
+## Questions
+
+------------------------------------------------------------------------
+
+### Q10
+
+
+```{r}
+
+
+# Check unique values and summary statistics for each variable
+unique_values <- brf %>%  select(PHYSHLTH,PERSDOC2,ADDEPEV2,SEX) %>% lapply(unique)
+summary_stats <-brf %>%  select(PHYSHLTH,PERSDOC2,ADDEPEV2,SEX) %>%  summary()
+
+unique_values
+summary_stats
+
+
+
+```
+
+### Q10 Discussion:
+
+
+
+PHYSHLTH (Number of days physical health not good)
+The variable "PHYSHLTH" represents the number of days of poor physical health reported by individuals in the past 30 days.It is a numerical data where each value represents a count of days.
+Values:
+1 to 30: Number of days during the past 30 days when physical health was not good.
+88: None (implying 0 days of poor physical health).
+77: Don't know/Not sure.
+99: Refused.
+I will exclude the responses for "Don't know/Not sure" and "Refused" from the analysis, as they do not provide meaningful data regarding the number of days of poor physical health and also "None" will be replaced with 0.
+
+
+PERSDOC2 (Health Care Access):
+The variable  "PERSDOC2" represents respondents who has one or more personal doctor or health care provider.
+Values:
+1: Yes, only one.
+2: More than one.
+3: No.
+7: Don't know/Not Sure.
+9: Refused.
+I will exclude responses for "Don't know/Not Sure" and "Refused" from the analysis, as they do not provide a clear indication of the presence or absence of a personal doctor or health care provider.
+
+
+ADDEPEV2 (Chronic Health Conditions):
+The variable represents respondents who has a depressive disorder, including depression, major depression, dysthymia, or minor 
+depression.
+Values:
+1: Yes.
+2: No.
+7: Don't know/Not sure.
+9: Refused.
+I will exclude responses for "Don't know/Not sure" and "Refused" from the analysis, as they do not provide a clear indication of whether the respondent has been told they have a depressive disorder.
+
+
+SEX (Respondent's Sex):
+The variable "SEX" represents the sex of respondents
+Values:
+1: Male.
+2: Female.
+
+
+Based on the above, I seek to predict the number of days of poor physical health (PHYSHLTH) from the variables PERSDOC2, ADDEPEV2, and SEX.
+
+
+### Q11
+
+Any outliers for each applicable variable were removed.
+
+```{r}
+
+# Replace "None" with 0 days for consistency
+brf$PHYSHLTH <- as.numeric(ifelse(brf$PHYSHLTH == "88", 0, brf$PHYSHLTH))
+
+# Remove responses for "Don't know/Not Sure" and "Refused" from each variable
+data_cleaned <- brf %>%  select(PHYSHLTH,PERSDOC2,ADDEPEV2,SEX) %>% 
+  filter(PHYSHLTH >=0 & PHYSHLTH<=30,
+         PERSDOC2 != 7 & PERSDOC2 != 9,
+         ADDEPEV2 != 7 & ADDEPEV2 != 9)
+
+# Check the number of observations after cleaning
+nrow(data_cleaned)
+
+# Update the dataset for the remainder of the analysis
+data<-data_cleaned
+
+
+
+# Remove outliers for PHYSHLTH variable
+# Calculate the upper fence (Q3 + 1.5*IQR)
+upper_fence_physhlth <- quantile(data$PHYSHLTH, 0.75) + (1.5 * IQR(data$PHYSHLTH))
+
+# Calculate the lower fence (Q1 - 1.5*IQR)
+lower_fence_physhlth <- quantile(data$PHYSHLTH, 0.25) - (1.5 * IQR(data$PHYSHLTH))
+
+# Filter the dataset to remove outliers
+data <- data_cleaned%>%
+  filter(
+    PHYSHLTH >= lower_fence_physhlth,
+    PHYSHLTH <= upper_fence_physhlth
+  ) %>% as.data.frame()
+
+data
+
+
+# Check the number of observations after removing outliers
+nrow(data)
+
+
+
+
+ 
+```
+
+### Q11 Discussion:
+
+In this code:
+
+Outliers for the "PHYSHLTH" variable are removed using the 1.5 * IQR rule. The upper and lower fences are calculated based on the first and third quartiles and the interquartile range (IQR). Observations outside these fences are filtered out.
+Responses for "Don't know/Not Sure" and "Refused" in the "PERSDOC2" variable are removed.
+Responses for "Don't know/Not Sure" and "Refused" in the "ADDEPEV2" variable are removed.
+No outliers are removed for the "SEX" variable since it does not have outliers.
+The updated dataset "data" is displayed.
+I chose the 1.5 * IQR rule to remove outliers for the "PHYSHLTH" variable because it is a method that effectively identifies outliers based on the spread of the data while retaining a sufficient number of observations for analysis. For categorical variables like "PERSDOC2" and "ADDEPEV2," I removed responses that were not informative or clear, which are "Don't know/Not Sure" and "Refused."This method is less sensitive to extreme values compared to other methods like the 3SD rule, making it suitable for a wide range of distributions.
+By calculating the upper and lower bounds based on the first and third quartiles, I ensured that the bounds capture the central 50% of the data, making it a reliable measure of central tendency.
+
+
+
+
+
+### Q12
+
+Exploratory analyses (for each variable) doing appropriate visualizations with ggplot2. Visualizations that incorporate a combination of your variables within one plot was include.
+
+```{r}
+
+# Load required library
+library(ggplot2)
+
+# 2a).  Exploratory analysis for PHYSHLTH variable
+# Histogram of PHYSHLTH
+ggplot(data, aes(x = PHYSHLTH)) +
+  geom_histogram(binwidth = 1, fill = "skyblue", color = "black") +
+  labs(title = "Distribution of Number of Days of Poor Physical Health",
+       x = "Number of Days",
+       y = "Frequency") +
+  theme_minimal()
+
+```
+
+12b).
+
+```{r}
+# Exploratory analysis for PERSDOC2 variable
+# Bar plot of PERSDOC2
+ggplot(data, aes(x = factor(PERSDOC2))) +
+  geom_bar(fill = "lightgreen", color = "black") +
+  labs(title = "Distribution of Number of Personal Doctors or Health Care Providers",
+       x = "Number of Personal Doctors or Health Care Providers",
+       y = "Frequency") +
+  scale_x_discrete(labels = c("1" = "One", "2" = "More than one", "3" = "None")) +
+  theme_minimal()
+```
+12c).
+
+```{r}
+# Exploratory analysis for ADDEPEV2 variable
+# Bar plot of ADDEPEV2
+ggplot(data, aes(x = factor(ADDEPEV2))) +
+  geom_bar(fill = "salmon", color = "black") +
+  labs(title = "Distribution of Ever Told Had a Depressive Disorder",
+       x = "Ever Told Had a Depressive Disorder",
+       y = "Frequency") +
+  scale_x_discrete(labels = c("1" = "Yes", "2" = "No")) +
+  theme_minimal()
+```
+
+12d)
+```{r}
+# Exploratory analysis for SEX variable
+# Bar plot of SEX
+ggplot(data, aes(x = factor(SEX))) +
+  geom_bar(fill = "gold", color = "black") +
+  labs(title = "Distribution of Respondents' Sex",
+       x = "Sex",
+       y = "Frequency") +
+  scale_x_discrete(labels = c("1" = "Male", "2" = "Female")) +
+  theme_minimal()
+```
+
+12e).
+```{r}
+#SEX (Categorical) vs. ADDEPEV2 (Categorical)
+# Stacked bar chart
+ggplot(data, aes(x = factor(SEX), fill = factor(ADDEPEV2))) +
+  geom_bar(position = "stack") +
+  labs(title = "Sex of respondents vs. Ever Told Had a Depressive Disorder",
+       x = "Sex",
+       y = "Proportion of Respondents",
+       fill = "Depressive Disorder") +
+  scale_x_discrete(labels = c("1" = "Male", "2" = "Female"))+
+  scale_fill_manual(values = c("lightblue", "darkblue"), 
+                    labels = c("No", "Yes")) +
+  theme_minimal()
+
+```
+
+```{r}
+# Combination of variables visualization: PERSDOC2 vs. ADDEPEV2 (stacked bar plot)
+ggplot(data, aes(x = factor(PERSDOC2), fill = factor(ADDEPEV2))) +
+  geom_bar(position = "fill") +
+  labs(title = "Personal Doctors/Providers vs. Ever Told Had a Depressive Disorder",
+       x = "Personal Doctors or Health Care Providers",
+       y = "Proportion of Respondents",
+       fill = "Depressive Disorder") +
+  scale_x_discrete(labels = c("1" = "One", "2" = "More than one", "3" = "None")) +
+  scale_fill_manual(values = c("lightblue", "darkorange"), 
+                    labels = c("No", "Yes")) +
+  theme_minimal()
+
+
+
+
+
+```
+
+### Q12 Discussion:
+
+
+12a) PHYSHLTH (Number of Days of Poor Physical Health):
+
+The histogram shows the distribution of the number of days of poor physical health. Most respondents report 0 to 7 days of poor health, with a few reporting higher numbers of days and majority of the respondents reported 0 days of poor health.
+
+b) PERSDOC2 (Number of Personal Doctors or Health Care Providers):
+The bar plot illustrates the distribution of the number of personal doctors or health care providers. Most respondents have only one personal doctor, while fewer have more than one or none.
+
+c) ADDEPEV2 (Ever Told Had a Depressive Disorder):
+This bar plot displays whether respondents have ever been told they have a depressive disorder. The majority report not having been told, while a smaller portion have.
+
+d) SEX (Respondent's Sex):
+The bar plot indicates the distribution of respondent's sex. It shows the proportion of male and female respondents in the dataset with the female respondents more than the male respondents.
+
+e) Stacked bar chart showing the relationship between respondent's sex (Male/Female) and whether they have been told they have a depressive disorder (1 or 2 which represents "yes" or "No" respectively). Each bar is segmented into two parts representing the counts of respondents for each combination of sex and depressive disorder status.More female respondents reported to have been diagnosed with Drepressive disorders.
+
+### Q13
+
+Run all of the appropriate basic descriptive statistics for each of your variables.  What do these statistics reveal? Be sure to address each variable in the "Q13 Discussion" below.
+
+```{r}
+
+# Descriptive statistics for PHYSHLTH
+
+summary(data$PHYSHLTH)
+sd(data$PHYSHLTH)
+var((data$PHYSHLTH))
+```
+
+13b).
+```{r}
+# Descriptive statistics for PERSDOC2
+summary(data$PERSDOC2)
+
+# Frequency counts for PERSDOC2
+table(data$PERSDOC2)
+```
+
+13c.
+```{r}
+# Descriptive statistics for ADDEPEV2
+summary(data$ADDEPEV2)
+# Frequency counts for PERSDOC2
+table(data$ADDEPEV2)
+```
+
+13d
+```{r}
+# Descriptive statistics for SEX
+summary(data$SEX)
+
+# Frequency counts for SEX
+table(data$SEX)
+
+```
+
+### Q13 Discussion:
+
+13a)
+The descriptive statistics for the variable PHYSHLTH are as follows:
+Minimum: The minimum value of PHYSHLTH is 0, indicating that some respondents reported having no days of poor physical health.
+1st Quartile: 25% of the respondents reported 0 days of poor physical health.
+Median: The median value is also 0, suggesting that half of the respondents reported 0 days of poor physical health.
+Mean: The mean value is approximately 0.75, indicating that on average, respondents reported less than one day of poor physical health.
+3rd Quartile: 75% of the respondents reported 0 days of poor physical health.
+Maximum: The maximum value is 7, indicating that some respondents reported up to 7 days of poor physical health.
+Standard Deviation: The standard deviation is approximately 1.61, indicating the variability in the number of days of poor physical health reported.
+Variance: The variance is approximately 2.61, providing a measure of the spread of the data.
+Based on these statistics, we can see that the majority of respondents reported no or very few days of poor physical health, with a small proportion reporting higher numbers of days. The mean value is influenced by the small number of respondents reporting higher values, leading to a value slightly higher than 0.
+
+
+B)The descriptive statistics for the variable PERSDOC2 are as follows:
+Minimum: The minimum value is 1, indicating that some respondents reported having only one personal doctor or healthcare provider.
+1st Quartile: 25% of the respondents reported having only one personal doctor or healthcare provider.
+Median: The median value is also 1, suggesting that half of the respondents reported having only one personal doctor or healthcare provider.
+Mean: The mean value is approximately 1.368, indicating that, on average, respondents reported having slightly more than one personal doctor or healthcare provider.
+3rd Quartile: 75% of the respondents reported having only one personal doctor or healthcare provider.
+Maximum: The maximum value is 3, indicating that some respondents reported having no personal doctor or healthcare provider.
+
+Frequency Counts:
+278,328 respondents reported having only one personal doctor or healthcare provider.
+24,528  respondents reported having more than one personal doctor or healthcare provider.
+55,543 respondents  reported not having a personal doctor or healthcare provider.
+
+These statistics reveal that the majority of respondents reported having at least one personal doctor or healthcare provider, with the vast majority reporting only one. Only a small proportion reported having more than one or none.
+The majority of respondents reported having at least one personal doctor/healthcare provider.
+
+
+
+
+C) The descriptive statistics for the variable ADDEPEV2 are as follows:
+
+Minimum: The minimum value is 1, indicating that some respondents reported being told they have a depressive disorder.
+1st Quartile: 25% of the respondents reported being told they have a depressive disorder.
+Median: The median value is 2, suggesting that half of the respondents reported not being told they have a depressive disorder.
+Mean: The mean value is approximately 1.849, indicating that, on average, respondents were told they have a depressive disorder less than half of the time.
+3rd Quartile: 75% of the respondents reported not being told they have a depressive disorder.
+Maximum: The maximum value is 2, indicating that some respondents reported not being told they have a depressive disorder.
+Frequency Counts:
+54,080 respondents (15.1%) reported being told they have a depressive disorder.
+304,319 respondents (84.9%) reported not being told they have a depressive disorder.
+These statistics reveal that a minority of respondents reported being told they have a depressive disorder, with the majority reporting not being told they have one
+
+D) The descriptive statistics for the variable SEX are as follows:
+Male (1): 155,524
+Female (2): 202,875
+These counts indicate the number of male and female respondents. In this case, there are more female respondents than male respondents
+
+### Q14
+
+Finally, run at least 2 different, appropriate regressions predicting the variable you indicated in Q10. These regressions should use different predictor(s). Organize and explain your code within the code chunk using comments. Identify the best model and provide a discussion of your observations in the *Q14 Discussion* section provided below. Be organized and detailed in your discussion.
+
+```{r}
+### Do not edit the following line. It is used by CodeGrade.
+# CG Q14 # 
+
+### TYPE YOUR CODE BELOW ###
+
+# Linear regression model with variable (SEX) as predictor
+model_sex <- lm(PHYSHLTH ~ SEX, data = data)
+
+# Summary of the model
+summary(model_sex)
+```
+14b)
+
+```{r}
+# Linear regression model with health-related variables (PERSDOC2 and ADDEPEV2) as predictors
+model_health <- lm(PHYSHLTH ~ PERSDOC2 + ADDEPEV2, data = data)
+
+# Summary of the model
+summary(model_health)
+
+
+```
+
+### Q14 Discussion:
+Your Q14 discussion goes here. Feel free to add more lines as needed.
+
+In these regression models:
+
+The first model (model_sex) predicts the number of days of poor physical health based on the respondent's sex (SEX).
+The second model (model_health) predicts the number of days of poor physical health based on variables related to health care access (PERSDOC2) and depressive disorder diagnosis (ADDEPEV2)
+
+
+14a). The linear regression model with the variable SEX as a predictor for the number of days of poor physical health (PHYSHLTH):
+
+The intercept of the model is estimated to be  0.501861.
+The coefficient for SEX is  0.158506, indicating the change in PHYSHLTH for each unit increase in SEX.
+The p-value for SEX is extremely low (< 2.2e-16).This suggests that the predictor SEX is statistically significant in predicting PHYSHLTH.
+
+Based on the results, the variable appear to be a significant predictor of the number of days of poor physical health.
+
+14b). 
+
+The linear regression model with the health-related variables (PERSDOC2 and ADDEPEV2) as predictors for the number of days of poor physical health (PHYSHLTH) yielded the following results:
+
+The intercept is estimated to be approximately 1.923, indicating the expected number of days of poor physical health when both predictor variables are zero.
+The coefficient for PERSDOC2 is approximately -0.022. This suggests that for each additional personal doctor or health care provider, there's a decrease of approximately 0.022 days of poor physical health, holding other variables constant.
+The coefficient for ADDEPEV2 is approximately -0.618. This indicates that individuals diagnosed with depressive disorder have approximately 0.618 fewer days of poor physical health, holding other variables constant.
+
+Overall, the model suggests that both having a personal doctor or health care provider and being told one has a depressive disorder are associated with a higher number of days of poor physical health.They are statistically significant predictors of the number of days of poor physical health.
+
+
+
+
+
